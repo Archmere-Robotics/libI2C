@@ -1,0 +1,7 @@
+Wires:
+1:DATA
+2:CLK
+3:REQ_1
+4:REQ_2
+5:ACC_1
+6:ACC_2
