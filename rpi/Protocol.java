@@ -46,6 +46,14 @@ public class Protocol {
       sendBit(bs[i]);
     }
   }
+  public static byte[] write(byte[] src, byte[] data, int begin, int end) {
+    for(int i=begin;i<end;i++)src[i]=data[i-start];
+    return src;
+  }
+  public static byte[] write(byte[] src, byte data, int index) {
+    src[index]=data;
+    return src;
+  }
   public static void sendBytes(byte[] bs) {
     //make header
     byte[] header = new byte[2];
