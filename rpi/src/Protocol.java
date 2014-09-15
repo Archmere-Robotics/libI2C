@@ -7,7 +7,10 @@ public class Protocol {
   static boolean isSending=false;
   public static boolean clk_pos=false;
   public static final byte intToByte(int i) {
-    return i&0xFF;
+    return (byte)(i & 0x00FF);
+  }
+  public static final sleep(int millis) {
+	  
   }
   public static void setPin(short pin, boolean value) {
     //do stuff
@@ -20,7 +23,7 @@ public class Protocol {
       setPin(pin_REQ,true);
       //wait for ACK
       while(!getPin(pin_ACK)) {
-        sleep(5);
+        Thread.sleep(5);
       }
   }
   public static void endTransmit() {
