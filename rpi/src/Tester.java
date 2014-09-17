@@ -28,9 +28,8 @@ public class Tester {
 			
 			System.out.println(out);
 		}
-		System.exit(0);
 		Packet packet = new Packet(UnsignedByte.makeSigned(UnsignedByte
-				.makeUnsigned(new int[] { 0xFF, 0xFF, 0x00, 0x32, 0x00 })));
+				.makeUnsigned(new int[] { 0xFF, 0xFF, 0x00, 0x32, 0x00})));
 		String s = bytesToHex(packet.getBytes());
 		System.out
 				.println(strSplit("HLHLHLHLDLDLDLDLCCCCCCCCNNNNNNNNNNNNNNNNDDDDDDDDDD"));
@@ -42,7 +41,7 @@ public class Tester {
 			packet = new Packet(bytes);
 			System.out.println(strSplit(bytesToHex(packet.getBytes())));
 			try {
-				Thread.sleep(50);
+				Thread.sleep(200);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -51,5 +50,3 @@ public class Tester {
 	}
 
 }
-// 00 1E 03 7F
-// 00 1C 0B 17

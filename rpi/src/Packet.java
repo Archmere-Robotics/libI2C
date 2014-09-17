@@ -49,6 +49,7 @@ public class Packet {
 	 */
 	protected byte[] getChecksum() {
 		int chk_1 = 0, chk_2 = 0, chk_3 = 0, chk_4 = 0;
+		if (debug) System.out.println("Checksum data:\n1\t2\t3\t4");
 		for (int i = 0; i < data.length; i++) {
 			byte tmp = data[i];
 			chk_1 += tmp&0x01 + ((tmp&0xFF)>>2)&0x01 + ((tmp&0xFF)>>4)&0x01 + ((tmp&0xFF)>>6)&0x01;//sum of the bits
@@ -56,17 +57,23 @@ public class Packet {
 			chk_3 += tmp&0x07 + rotateRight(tmp,0x2)&0x07 + rotateRight(tmp,0x4)&0x07 + rotateRight(tmp,0x6)&0x07;//sum of tripplets
 			chk_4 += tmp&0xFF + rotateRight(tmp,0x2)&0xFF + rotateRight(tmp,0x4)&0xFF + rotateRight(tmp,0x6)&0xFF;//sum of rotated bytes
 			//rotate the checksums (assures that a byte of 0x00 has an effect on the checksum)
+			if(debug) System.out.println(""+Integer.toHexString(chk_1) + "\t"
+						+ Integer.toHexString(chk_2) + "\t"
+						+ Integer.toHexString(chk_3) + "\t"
+						+ Integer.toHexString(chk_4));
 			int tmp_4 = chk_4;
-			chk_4 = rrot(chk_3,1);
-			chk_3 = rrot(chk_2,1);
-			chk_2 = rrot(chk_1,1);
-			chk_1 = rrot(tmp_4,1);
+			chk_4 = rrot(chk_3,2);
+			chk_3 = rrot(chk_2,2);
+			chk_2 = rrot(chk_1,2);
+			chk_1 = rrot(tmp_4,2);
+			if (debug) System.out.println(""+Integer.toHexString(chk_1) + "\t"
+						+ Integer.toHexString(chk_2) + "\t"
+						+ Integer.toHexString(chk_3) + "\t"
+						+ Integer.toHexString(chk_4)+"\n");
 		}
-		byte[] chk = ByteBuffer.allocate(Integer.BYTES).putInt((chk_1 + chk_2) ^ (chk_3 + chk_4)).array();
+		byte[] chk = ByteBuffer.allocate(Integer.BYTES).putInt((chk_1 + chk_2) ^ (chk_3 * chk_4)).array();
 		if (debug) {
-			System.out.println("Checksum data:");
-			System.out.println("1\t2\t3\t4");
-			System.out.println(Integer.toHexString(chk_1) + "\t"
+			System.out.println("Total:\n"+Integer.toHexString(chk_1) + "\t"
 					+ Integer.toHexString(chk_2) + "\t"
 					+ Integer.toHexString(chk_3) + "\t"
 					+ Integer.toHexString(chk_4));
