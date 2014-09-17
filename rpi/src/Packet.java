@@ -4,38 +4,18 @@ public class Packet {
 	public static final boolean debug = false;
 	public static long packetNum = 1;
 
-	public static final int lrot(int src, byte times) {
-		int out = src;
-		for (; times > 0; times--)
-			out = lrot(out);
-		return out;
+	public static final int lrot(int src, int bits) {
+		return return (src >>> bits) | (src << (Integer.SIZE - bits));
 	}
 
-	public static final int rrot(int src, byte times) {
-		int out = src;
-		for (; times > 0; times--)
-			out = rrot(out);
-		return out;
-	}
-
-	public static final int lrot(int src) {
-		return src << 2 + ((src & 0xFF000000) >> 6);
-	}
-
-	public static final int rrot(int src) {
-		return src >> 2 + ((src & 0xFF) << 6);
-	}
-
-	public static final int rrot(byte src, byte times) {
-		byte out = src;
-		for (; times > 0; times--)
-			out = rrot(out);
-		return out;
+	public static final int rrot(int src, int bits) {
+		return (src << bits) | (src >>> (Integer.SIZE - bits));
 	}
 
 	public static final byte rrot(byte src) {
 		return (byte) (src >> 1 + ((src & 0x8) << 7));
 	}
+
 
 	public synchronized static byte[] bCat(byte[]... bytes) {
 		int size = 0;
@@ -70,7 +50,7 @@ public class Packet {
 		int chk_1 = 0, chk_2 = 0, chk_3 = 0, chk_4 = 0;
 		for (int i = 0; i < data.length; i++) {
 			byte tmp = data[i];
-			chk_1 += (tmp & 0x1) + ((tmp & 0x2) >> 2) + ((tmp & 0x4) >> 4)
+			chk_1 += rrot(tmp) + ((tmp & 0x2) >> 2) + ((tmp & 0x4) >> 4)
 					+ ((tmp & 0x8) >> 6);
 			chk_2 += (tmp & 0x3) + ((tmp & 0xC) >> 2) + ((tmp & 0x6) << 3)
 					+ ((tmp & 0x9) << 6);
@@ -93,7 +73,7 @@ public class Packet {
 					+ Integer.toHexString(chk_4));
 		}
 		return ByteBuffer.allocate(Integer.BYTES)
-				.putInt((chk_1 + chk_2) | (chk_3 + chk_4)).array();
+				.putInt((chk_1 + chk_2) ^ (chk_3 + chk_4)).array();
 	}
 
 	public byte[] getHeader() {
