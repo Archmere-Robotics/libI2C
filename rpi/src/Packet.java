@@ -51,20 +51,18 @@ public class Packet {
 		int chk_1 = 0, chk_2 = 0, chk_3 = 0, chk_4 = 0;
 		for (int i = 0; i < data.length; i++) {
 			byte tmp = data[i];
-			chk_1 += rrot(tmp) + ((tmp & 0x2) >> 2) + ((tmp & 0x4) >> 4)
-					+ ((tmp & 0x8) >> 6);
-			chk_2 += (tmp & 0x3) + ((tmp & 0xC) >> 2) + ((tmp & 0x6) << 3)
-					+ ((tmp & 0x9) << 6);
-			chk_3 += (rrot(tmp, (byte) 1) & 0x3) << 0 + (rrot(tmp, (byte) 2) & 0x3) << 2 + (rrot(
-					tmp, (byte) 3) & 0x3) << 4 + (rrot(tmp, (byte) 4) & 0x3) << 6;
-			chk_4 += rrot(tmp) << 0 + (rrot(tmp, (byte) 2)) << 2 + (rrot(tmp,
-					(byte) 3)) << 4 + tmp << 6;
+			chk_1 += tmp&0x01 + ((tmp&0xFF)>>2)&0x01 + ((tmp&0xFF)>>4)&0x01 + ((tmp&0xFF)>>6)&0x01;//sum of the bits
+			chk_2 += (tmp&0xFF)&0x03 + ((tmp&0xFF)>>2)&0x03 + ((tmp&0xFF)>>4)&0x03 + ((tmp>>6)&0x03;//sum of pairs of bits
+			chk_3 += tmp&0x07 + rotateRight(tmp,0x2)&0x07 + rotateRight(tmp,0x4)&0x07 + rotateRight(tmp,0x6)&0x07;//sum of tripplets
+			chk_4 += tmp&0xFF + rotateRight(tmp,0x2)&0xFF + rotateRight(tmp,0x4)&0xFF + rotateRight(tmp,0x6)&0xFF;//sum of rotated bytes
+			//rotate the checksums (assures that a byte of 0x00 has an effect on the checksum)
 			int tmp_4 = chk_4;
-			chk_4 = rrot(chk_3);
-			chk_3 = lrot(chk_2);
-			chk_2 = rrot(chk_1);
-			chk_1 = lrot(tmp_4, (byte) 2);
+			chk_4 = rrot(chk_3,1);
+			chk_3 = rrot(chk_2,1);
+			chk_2 = rrot(chk_1,1);
+			chk_1 = rrot(tmp_4,1);
 		}
+		byte[] chk = ByteBuffer.allocate(Integer.BYTES).putInt((chk_1 + chk_2) ^ (chk_3 + chk_4)).array();
 		if (debug) {
 			System.out.println("Checksum data:");
 			System.out.println("1\t2\t3\t4");
@@ -72,9 +70,9 @@ public class Packet {
 					+ Integer.toHexString(chk_2) + "\t"
 					+ Integer.toHexString(chk_3) + "\t"
 					+ Integer.toHexString(chk_4));
+			System.out.println("Checksum\n"+Tester.bytesToHex(chk));
 		}
-		return ByteBuffer.allocate(Integer.BYTES)
-				.putInt((chk_1 + chk_2) ^ (chk_3 + chk_4)).array();
+		return chk;
 	}
 
 	public byte[] getHeader() {
