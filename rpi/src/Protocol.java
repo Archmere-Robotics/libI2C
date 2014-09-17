@@ -9,11 +9,16 @@ public class Protocol {
   public static final byte intToByte(int i) {
     return (byte)(i & 0x00FF);
   }
-  public static final sleep(int millis) {
-	  
+  public static final boolean sleep(int millis) {
+	  try {
+		  Thread.sleep(millis);
+		  return true;
+	  } catch(InterruptedException e) {
+		  return false;
+	  }
   }
   public static void setPin(short pin, boolean value) {
-    //do stuff
+    System.out.println("PIN"+pin+"|"+value);
   }
   public static boolean getPin(short pin) {
     return false;
@@ -23,7 +28,7 @@ public class Protocol {
       setPin(pin_REQ,true);
       //wait for ACK
       while(!getPin(pin_ACK)) {
-        Thread.sleep(5);
+        sleep(5);
       }
   }
   public static void endTransmit() {
@@ -36,21 +41,24 @@ public class Protocol {
   }
   public static void sendBit(boolean b) {
     setPin(pin_DATA, b);
-    setPin(pin_CLK,(clk_pos=!clkPos));
+    setPin(pin_CLK,(clk_pos=!clk_pos));
   }
-  public static void sendByte(byte b) {
+  public static void sendByte(byte x) {
     boolean bs[] = new boolean[4];
-    bs[0] = ((x & 0x01) != 0);
+    /*bs[0] = ((x & 0x01) != 0);
     bs[1] = ((x & 0x02) != 0);
     bs[2] = ((x & 0x04) != 0);
-    bs[3] = ((x & 0x08) != 0);
+    bs[3] = ((x & 0x08) != 0);*/
+    for(byte i=0;i<8;i++) {
+    	bs[i]=(x & (byte)(1<<i))!=0;
+    }
     beginTransmit();
     for(byte i=0;i<4;i++) {
       sendBit(bs[i]);
     }
   }
   public static byte[] write(byte[] src, byte[] data, int begin, int end) {
-    for(int i=begin;i<end;i++)src[i]=data[i-start];
+    for(int i=begin;i<end;i++)src[i]=data[i-begin];
     return src;
   }
   public static byte[] write(byte[] src, byte data, int index) {
