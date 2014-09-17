@@ -5,7 +5,7 @@ public class Packet {
 	public static long packetNum = 1;
 
 	public static final int lrot(int src, int bits) {
-		return return (src >>> bits) | (src << (Integer.SIZE - bits));
+		return (src >>> bits) | (src << (Integer.SIZE - bits));
 	}
 
 	public static final int rrot(int src, int bits) {
@@ -52,7 +52,7 @@ public class Packet {
 		for (int i = 0; i < data.length; i++) {
 			byte tmp = data[i];
 			chk_1 += tmp&0x01 + ((tmp&0xFF)>>2)&0x01 + ((tmp&0xFF)>>4)&0x01 + ((tmp&0xFF)>>6)&0x01;//sum of the bits
-			chk_2 += (tmp&0xFF)&0x03 + ((tmp&0xFF)>>2)&0x03 + ((tmp&0xFF)>>4)&0x03 + ((tmp>>6)&0x03;//sum of pairs of bits
+			chk_2 += (tmp&0xFF)&0x03 + ((tmp&0xFF)>>2)&0x03 + ((tmp&0xFF)>>4)&0x03 + ((tmp>>6)&0x03);//sum of pairs of bits
 			chk_3 += tmp&0x07 + rotateRight(tmp,0x2)&0x07 + rotateRight(tmp,0x4)&0x07 + rotateRight(tmp,0x6)&0x07;//sum of tripplets
 			chk_4 += tmp&0xFF + rotateRight(tmp,0x2)&0xFF + rotateRight(tmp,0x4)&0xFF + rotateRight(tmp,0x6)&0xFF;//sum of rotated bytes
 			//rotate the checksums (assures that a byte of 0x00 has an effect on the checksum)
