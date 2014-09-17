@@ -11,11 +11,12 @@ public class Packet {
 	public static final int rrot(int src, int bits) {
 		return (src << bits) | (src >>> (Integer.SIZE - bits));
 	}
-
-	public static final byte rrot(byte src) {
-		return (byte) (src >> 1 + ((src & 0x8) << 7));
+	public static byte rotateRight(byte bits, int shift) {
+		return (byte)(((bits & 0xff)  >>> shift) | ((bits & 0xff) << (8 - shift)));
 	}
-
+	public static byte rotateLeft(byte bits, int shift) {
+		return (byte)(((bits & 0xff) << shift) | ((bits & 0xff) >>> (8 - shift)));
+	}
 
 	public synchronized static byte[] bCat(byte[]... bytes) {
 		int size = 0;
