@@ -19,7 +19,7 @@
   Modified 2012 by Todd Krein (todd@krein.org) to implement repeated starts
   Modified 2014 to port to RobotC by Archmere Robotics
 */
-#include "twi.h"
+#include "twi.c"
 #include "Wire.h"
 
 // Initialize Class Variables //////////////////////////////////////////////////
