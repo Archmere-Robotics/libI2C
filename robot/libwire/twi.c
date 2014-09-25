@@ -17,6 +17,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
   Modified 2012 by Todd Krein (todd@krein.org) to implement repeated starts
+  Modified 2014 to port to RobotC by Archmere Robotics
 */
 
 #include <math.h>
@@ -65,21 +66,20 @@ static volatile uint8_t twi_error;
  * Input    none
  * Output   none
  */
-void twi_init(void)
-{
-  // initialize state
-  twi_state = TWI_READY;
-  twi_sendStop = true;		// default value
-  twi_inRepStart = false;
+void twi_init(void) {
+	// initialize state
+	twi_state = TWI_READY;
+	twi_sendStop = true;		// default value
+	twi_inRepStart = false;
   
-  // activate internal pullups for twi.
-  digitalWrite(SDA, 1);
-  digitalWrite(SCL, 1);
-
-  // initialize twi prescaler and bit rate
-  cbi(TWSR, TWPS0);
-  cbi(TWSR, TWPS1);
-  TWBR = ((F_CPU / TWI_FREQ) - 16) / 2;
+	// activate internal pullups for twi.
+	digitalWrite(SDA, 1);
+	digitalWrite(SCL, 1);
+	
+	// initialize twi prescaler and bit rate
+	cbi(TWSR, TWPS0);
+	cbi(TWSR, TWPS1);
+	TWBR = ((F_CPU / TWI_FREQ) - 16) / 2;
 
   /* twi bit rate formula from atmega128 manual pg 204
   SCL Frequency = CPU Clock Frequency / (16 + (2 * TWBR))
@@ -96,8 +96,7 @@ void twi_init(void)
  * Input    none
  * Output   none
  */
-void twi_setAddress(uint8_t address)
-{
+void twi_setAddress(uint8_t address) {
   // set twi slave address (skip over TWGCE bit)
   TWAR = address << 1;
 }
