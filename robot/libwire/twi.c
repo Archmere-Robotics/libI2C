@@ -111,17 +111,16 @@ void twi_setAddress(uint8_t address) {
  *          sendStop: Boolean indicating whether to send a stop at the end
  * Output   number of bytes read
  */
-uint8_t twi_readFrom(uint8_t address, uint8_t* data, uint8_t length, uint8_t sendStop)
-{
+uint8_t twi_readFrom(uint8_t address, uint8_t* data, uint8_t length, uint8_t sendStop) {
   uint8_t i;
 
   // ensure data will fit into buffer
-  if(TWI_BUFFER_LENGTH < length){
+  if(TWI_BUFFER_LENGTH < length) {
     return 0;
   }
 
   // wait until twi is ready, become master receiver
-  while(TWI_READY != twi_state){
+  while(TWI_READY != twi_state) {
     continue;
   }
   twi_state = TWI_MRX;
@@ -152,13 +151,12 @@ uint8_t twi_readFrom(uint8_t address, uint8_t* data, uint8_t length, uint8_t sen
     twi_inRepStart = false;			// remember, we're dealing with an ASYNC ISR
     TWDR = twi_slarw;
     TWCR = _BV(TWINT) | _BV(TWEA) | _BV(TWEN) | _BV(TWIE);	// enable INTs, but not START
-  }
-  else
+  } else
     // send start condition
     TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA) | _BV(TWINT) | _BV(TWSTA);
 
   // wait for read operation to complete
-  while(TWI_MRX == twi_state){
+  while(TWI_MRX == twi_state) {
     continue;
   }
 
@@ -188,17 +186,16 @@ uint8_t twi_readFrom(uint8_t address, uint8_t* data, uint8_t length, uint8_t sen
  *          3 .. data send, NACK received
  *          4 .. other twi error (lost bus arbitration, bus error, ..)
  */
-uint8_t twi_writeTo(uint8_t address, uint8_t* data, uint8_t length, uint8_t wait, uint8_t sendStop)
-{
+uint8_t twi_writeTo(uint8_t address, uint8_t* data, uint8_t length, uint8_t wait, uint8_t sendStop) {
   uint8_t i;
 
   // ensure data will fit into buffer
-  if(TWI_BUFFER_LENGTH < length){
+  if(TWI_BUFFER_LENGTH < length) {
     return 1;
   }
 
   // wait until twi is ready, become master transmitter
-  while(TWI_READY != twi_state){
+  while(TWI_READY != twi_state) {
     continue;
   }
   twi_state = TWI_MTX;
@@ -211,7 +208,7 @@ uint8_t twi_writeTo(uint8_t address, uint8_t* data, uint8_t length, uint8_t wait
   twi_masterBufferLength = length;
   
   // copy data to twi buffer
-  for(i = 0; i < length; ++i){
+  for(i = 0; i < length; ++i) {
     twi_masterBuffer[i] = data[i];
   }
   
@@ -232,13 +229,12 @@ uint8_t twi_writeTo(uint8_t address, uint8_t* data, uint8_t length, uint8_t wait
     twi_inRepStart = false;			// remember, we're dealing with an ASYNC ISR
     TWDR = twi_slarw;				
     TWCR = _BV(TWINT) | _BV(TWEA) | _BV(TWEN) | _BV(TWIE);	// enable INTs, but not START
-  }
-  else
+  } else
     // send start condition
     TWCR = _BV(TWINT) | _BV(TWEA) | _BV(TWEN) | _BV(TWIE) | _BV(TWSTA);	// enable INTs
 
   // wait for write operation to complete
-  while(wait && (TWI_MTX == twi_state)){
+  while(wait && (TWI_MTX == twi_state)) {
     continue;
   }
   
@@ -262,8 +258,7 @@ uint8_t twi_writeTo(uint8_t address, uint8_t* data, uint8_t length, uint8_t wait
  *          2 not slave transmitter
  *          0 ok
  */
-uint8_t twi_transmit(const uint8_t* data, uint8_t length)
-{
+uint8_t twi_transmit(const uint8_t* data, uint8_t length) {
   uint8_t i;
 
   // ensure data will fit into buffer
@@ -291,8 +286,8 @@ uint8_t twi_transmit(const uint8_t* data, uint8_t length)
  * Input    function: callback function to use
  * Output   none
  */
-void twi_attachSlaveRxEvent( void (*function)(uint8_t*, int) )
-{
+ //TODO: Remove LAMBDA
+void twi_attachSlaveRxEvent( void (*function)(uint8_t*, int) ) {
   twi_onSlaveReceive = function;
 }
 
@@ -302,8 +297,8 @@ void twi_attachSlaveRxEvent( void (*function)(uint8_t*, int) )
  * Input    function: callback function to use
  * Output   none
  */
-void twi_attachSlaveTxEvent( void (*function)(void) )
-{
+  //TODO: Remove LAMBDA
+void twi_attachSlaveTxEvent( void (*function)(void) ) {
   twi_onSlaveTransmit = function;
 }
 
@@ -313,8 +308,7 @@ void twi_attachSlaveTxEvent( void (*function)(void) )
  * Input    ack: byte indicating to ack or to nack
  * Output   none
  */
-void twi_reply(uint8_t ack)
-{
+void twi_reply(uint8_t ack) {
   // transmit master read ready signal, with or without ack
   if(ack){
     TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWINT) | _BV(TWEA);
@@ -329,8 +323,7 @@ void twi_reply(uint8_t ack)
  * Input    none
  * Output   none
  */
-void twi_stop(void)
-{
+void twi_stop(void) {
   // send stop condition
   TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA) | _BV(TWINT) | _BV(TWSTO);
 
@@ -350,17 +343,15 @@ void twi_stop(void)
  * Input    none
  * Output   none
  */
-void twi_releaseBus(void)
-{
+void twi_releaseBus(void) {
   // release bus
   TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA) | _BV(TWINT);
 
   // update twi state
   twi_state = TWI_READY;
 }
-
-ISR(TWI_vect)
-{
+//TODO find out what this does
+ISR(TWI_vect) {
   switch(TW_STATUS){
     // All Master
     case TW_START:     // sent start condition
