@@ -40,38 +40,38 @@ void (*user_onReceive)(int);
 // Public Methods //////////////////////////////////////////////////////////////
 
 void wire_begin(void) {
-  rxBufferIndex = 0;
-  rxBufferLength = 0;
+	rxBufferIndex = 0;
+	rxBufferLength = 0;
 
-  txBufferIndex = 0;
-  txBufferLength = 0;
+	txBufferIndex = 0;
+	txBufferLength = 0;
 
-  twi_init();
+	twi_init();
 }
 
 void wire_begin(uint8_t address) {
-  twi_setAddress(address);
-  twi_attachSlaveTxEvent(onRequestService);
-  twi_attachSlaveRxEvent(onReceiveService);
-  begin();
+	twi_setAddress(address);
+	twi_attachSlaveTxEvent(onRequestService);
+	twi_attachSlaveRxEvent(onReceiveService);
+	wire_begin();
 }
 
 void wire_begin(int address) {
-  wire_begin((uint8_t)address);
+	wire_begin((uint8_t)address);
 }
 
 uint8_t wire_requestFrom(uint8_t address, uint8_t quantity, uint8_t sendStop) {
-  // clamp to buffer length
-  if(quantity > BUFFER_LENGTH){
-    quantity = BUFFER_LENGTH;
-  }
-  // perform blocking read into buffer
-  uint8_t read = twi_readFrom(address, rxBuffer, quantity, sendStop);
-  // set rx buffer iterator vars
-  rxBufferIndex = 0;
-  rxBufferLength = read;
+	// clamp to buffer length
+	if(quantity > BUFFER_LENGTH){
+		quantity = BUFFER_LENGTH;
+	}
+	// perform blocking read into buffer
+	uint8_t read = twi_readFrom(address, rxBuffer, quantity, sendStop);
+	// set rx buffer iterator vars
+	rxBufferIndex = 0;
+	rxBufferLength = read;
 
-  return read;
+	return read;
 }
 
 uint8_t wire_requestFrom(uint8_t address, uint8_t quantity) {
@@ -159,17 +159,17 @@ size_t wire_write(uint8_t data) {
 // slave tx event callback
 // or after beginTransmission(address)
 size_t wire_write(const uint8_t *data, size_t quantity) {
-  if(transmitting){
-  // in master transmitter mode
-    for(size_t i = 0; i < quantity; ++i){
-      wire_write(data[i]);
-    }
-  }else{
-  // in slave send mode
-    // reply to master
-    twi_transmit(data, quantity);
-  }
-  return quantity;
+	if(transmitting){
+		// in master transmitter mode
+		for(size_t i = 0; i < quantity; ++i){
+			wire_write(data[i]);
+		}
+	}else{
+		// in slave send mode
+		// reply to master
+		twi_transmit(data, quantity);
+	}
+	return quantity;
 }
 
 // must be called in:
