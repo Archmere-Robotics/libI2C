@@ -6,10 +6,10 @@ class SerialDevice {
 		SerialDevice(int device);
 		SerialDevice(std::string device, int baud);
 		-SerialDevice();
-		void writeByte(byte b);
-		void writeShort(unsigned short b);
+		void writeByte(unsigned char b);
 		void writeInt(unsigned int b);
-		byte readByte();
-		short readShort();
-		int readInt();
+		char nextByte();
+		unsigned int nextInt();
+		void flush();
+		int available();
 }
