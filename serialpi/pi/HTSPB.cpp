@@ -19,3 +19,11 @@ int HTSPB::get(unsigned int address) {
 	this->device->writeInt(address);
 	return this->device->readInt();
 }
+void HTSPB::load(int length, char* program) {
+	for(int i=0;i<length;i++) {
+		this->device->writeByte(program[i]);
+	}
+}
+void HTSPB::execute(int progNum) {
+	
+}
